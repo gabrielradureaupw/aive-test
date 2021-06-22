@@ -143,5 +143,20 @@ curl localhost:8080/appointments/confirm?id=&email= # confirm email
     ]
   }
   ```
+- list available slots  
+  `curl localhost:8080/appointments | jq | head`
+  ```json
+  {
+  "vaccinationCenters": [
+    {
+      "city": "Northleach",
+      "name": "Jawthorn",
+      "slots": [
+        "2021-06-23T10:00",
+        "- busy -",
+        "2021-06-23T12:00",
+        "2021-06-23T14:00",
+  //... truncated
+  ```
 
 ### Amount of time taken: around 6 hours
