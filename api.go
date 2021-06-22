@@ -1,23 +1,14 @@
 package main
 
-import "time"
-
-type ListAvailableSlotsRequest struct {
-	VaccinationCenter `json:"vaccination_center,omitempty"`
-	Day               time.Time `json:"day,omitempty"`
-}
-
-type ListAvailableSlotsResponse struct {
-}
-
 type MakeAppointmentRequest struct {
 	Appointment
 }
 
 type ConfirmAppointmentRequest struct {
-	Appointment
+	ID    uint   `form:"id" valid:"required"`
+	Email string `form:"email" valid:"email,required"`
 }
 
-type ListVaccinationCenterDailyAppointmentsRequest struct { // Authenticated
-	VaccinationCenter
+type ListDailyAppointmentsResponse struct { // Authenticated
+	DailyAppointments map[string][]*Appointment `json:"dailyAppointments"`
 }
