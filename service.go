@@ -2,12 +2,11 @@ package main
 
 import (
 	"context"
-	"database/sql/driver"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/gabrielradureaupw/aivetest/pkg/email"
+	"github.com/gabrielradureaupw/aivetest/pkg/timeslot"
 )
 
 func ListAvailableSlots(ctx context.Context, st AppointmentStore) (centers []*VaccinationCenter, err error) {
@@ -23,40 +22,6 @@ func ListAvailableSlots(ctx context.Context, st AppointmentStore) (centers []*Va
 	return
 }
 
-func (t TimeSlot) String() string {
-	if t.IsZero() {
-		return "- busy -" // for display purpose
-	}
-	return t.Format("2006-01-02T15:04")
-}
-func (t *TimeSlot) UnmarshalJSON(b []byte) (err error) {
-	inputStr := strings.Trim(string(b), "\"")
-	t.Time, err = time.Parse("2006-01-02T15:04", inputStr)
-	return
-}
-func (t TimeSlot) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf("\"%s\"", t.String())), nil
-}
-func (t *TimeSlot) Scan(src interface{}) error {
-	switch tp := src.(type) {
-	case time.Time:
-		t.Time = src.(time.Time)
-		return nil
-	default:
-		fmt.Printf("timeslot is used with type %+v\n", tp)
-	}
-	return fmt.Errorf("Failed to scan timeslot from the database")
-}
-func (t TimeSlot) Value() (driver.Value, error) {
-	return t.Time, nil
-}
-
-func (t TimeSlot) Valid() bool {
-	isSunday := t.Weekday() == 0
-	isTimeOff := t.Hour() < 10 || t.Hour() > 15 || t.Hour() > 12 && t.Hour() < 14
-	return !(isSunday || isTimeOff)
-}
-
 // ComputeTimeSlots set available time slots MON-SAT 10-12AM to 2PM-4PM
 func (c *VaccinationCenter) ComputeTimeSlots(nDays int) {
 	set := make(map[string]struct{})
@@ -64,14 +29,14 @@ func (c *VaccinationCenter) ComputeTimeSlots(nDays int) {
 		set[rdv.TimeSlot.String()] = struct{}{}
 	}
 	from := time.Now().Local().Truncate(time.Hour)
-	for slot := (TimeSlot{from}); slot.Sub(from) < time.Duration(nDays)*24*time.Hour; slot = (TimeSlot{slot.Add(time.Hour)}) {
+	for slot := (timeslot.TimeSlot{Time: from}); slot.Sub(from) < time.Duration(nDays)*24*time.Hour; slot = (timeslot.TimeSlot{Time: slot.Add(time.Hour)}) {
 		if !slot.Valid() {
 			continue
 		}
 		if _, ok := set[slot.String()]; !ok {
 			c.Slots = append(c.Slots, slot)
 		} else {
-			c.Slots = append(c.Slots, TimeSlot{}) // time slot with appointment for display purpose
+			c.Slots = append(c.Slots, timeslot.TimeSlot{}) // time slot with appointment for display purpose
 		}
 	}
 }
