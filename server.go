@@ -17,8 +17,8 @@ func Serve() {
 		h := NewHandler(NewStore())
 		appointments.GET("", h.ListAvailableSlots)
 		appointments.POST("", h.MakeAppointment)
-		appointments.GET("confirm", h.ConfirmAppointment)
-		appointments.GET("daily", // use GET http method for simple use with email link
+		appointments.GET("confirm", h.ConfirmAppointment) // use GET http method for simple use with email link
+		appointments.GET("daily",
 			gin.BasicAuth(gin.Accounts{
 				"aive": "test",
 			}),
