@@ -52,7 +52,7 @@ func ListDailyAppointments(ctx context.Context, st AppointmentStore) (resp ListD
 		ref.Appointments = nil // strip other appointements info
 		for _, rdv := range c.Appointments {
 			rdv.VaccinationCenter = &ref
-			dayStr := rdv.TimeSlot.String()
+			dayStr := rdv.TimeSlot.Time.Format("2006-01-02")
 			m[dayStr] = append(m[dayStr], rdv)
 		}
 	}

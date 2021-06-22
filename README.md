@@ -104,7 +104,7 @@ curl localhost:8080/appointments/confirm?id=&email= # confirm email
   ```json
   {
     "dailyAppointments": {
-    "2021-06-23T11:00": [
+    "2021-06-23": [
       {
         "vaccinationCenter": {
           "city": "Northleach",
@@ -130,7 +130,7 @@ curl localhost:8080/appointments/confirm?id=&email= # confirm email
   ```json
   {
     "dailyAppointments": {
-    "2021-06-23T11:00": [
+    "2021-06-23": [
       {
         "vaccinationCenter": {
           "city": "Northleach",
